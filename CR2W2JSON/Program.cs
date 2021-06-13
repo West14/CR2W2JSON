@@ -72,6 +72,8 @@ namespace CR2W2JSON
             {
                 case "audioAudioEventArray":
                     return new AudioEventArrayParser(chunk);
+                case "localizationPersistenceOnScreenEntries":
+                    return new OnScreenParser(chunk);
             }
 
             return null;
