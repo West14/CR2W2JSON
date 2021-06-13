@@ -74,6 +74,8 @@ namespace CR2W2JSON
                     return new AudioEventArrayParser(chunk);
                 case "localizationPersistenceOnScreenEntries":
                     return new OnScreenParser(chunk);
+                case "localizationPersistenceLocDataMap":
+                    return new LocDataMapEntryParser(chunk);
             }
 
             return null;
