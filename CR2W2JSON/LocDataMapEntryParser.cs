@@ -65,10 +65,10 @@ namespace CR2W2JSON
                             obj.LangCode = rv;
                             break;
                         case "onscreensPath":
-                            obj.OnscreensPath = rv;
+                            obj.OnscreensPath = rv.Replace("[Soft]", "");
                             break;
                         case "subtitlePath":
-                            obj.SubtitlePath = rv;
+                            obj.SubtitlePath = rv.Replace("[Soft]", "");
                             break;
                     }
                 }
