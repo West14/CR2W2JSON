@@ -131,8 +131,6 @@ namespace WolvenKit.RED4.CR2W
             }
             
             string readstring;
-            EncodingProvider ppp = CodePagesEncodingProvider.Instance;
-            Encoding.RegisterProvider(ppp);
             readstring = widechar
                 ? Encoding.Unicode.GetString(br.ReadBytes(size * 2))
                 : Encoding.UTF8.GetString(br.ReadBytes(size)); //Encoding.GetEncoding("ISO-8859-1").GetString(br.ReadBytes(size));
