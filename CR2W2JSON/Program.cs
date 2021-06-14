@@ -75,7 +75,9 @@ namespace CR2W2JSON
                 case "localizationPersistenceOnScreenEntries":
                     return new OnScreenParser(chunk);
                 case "localizationPersistenceLocDataMap":
-                    return new LocDataMapEntryParser(chunk);
+                    return new LocDataMapParser(chunk);
+                case "locVoLanguageDataMap":
+                    return new VOLanguageDataMapParser(chunk);
             }
 
             return null;
