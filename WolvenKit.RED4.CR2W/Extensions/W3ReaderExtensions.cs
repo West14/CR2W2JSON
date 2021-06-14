@@ -129,11 +129,13 @@ namespace WolvenKit.RED4.CR2W
                 next = (b & 128) == 128;
                 offset += 7;
             }
-
+            
             string readstring;
+            EncodingProvider ppp = CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(ppp);
             readstring = widechar
                 ? Encoding.Unicode.GetString(br.ReadBytes(size * 2))
-                : Encoding.GetEncoding("ISO-8859-1").GetString(br.ReadBytes(size));
+                : Encoding.UTF8.GetString(br.ReadBytes(size)); //Encoding.GetEncoding("ISO-8859-1").GetString(br.ReadBytes(size));
 
             return readstring;
         }
