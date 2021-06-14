@@ -18,7 +18,7 @@ namespace CR2W2JSON
             public string MaleResPath;
 
             [JsonInclude]
-            [JsonPropertyName("stringId")]
+            [JsonPropertyName("CRUID")]
             public string StringId;
         }
 
