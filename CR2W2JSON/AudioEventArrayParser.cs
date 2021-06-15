@@ -154,7 +154,7 @@ namespace CR2W2JSON
                             {
                                 tagList.Add(ev.REDValue);
                             }
-                            obj.StopActionEvents = tagList;
+                            obj.Tags = tagList;
                             break;
                     }
                 } 
