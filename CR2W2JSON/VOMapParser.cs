@@ -18,7 +18,7 @@ namespace CR2W2JSON
             public string MaleResPath;
 
             [JsonInclude]
-            [JsonPropertyName("CRUID")]
+            [JsonPropertyName("stringId")]
             public string StringId;
         }
 
@@ -68,7 +68,7 @@ namespace CR2W2JSON
                             obj.MaleResPath = rv.Replace("[Soft]", "");
                             break;
                         case "stringId":
-                            obj.StringId = rv;
+                            obj.StringId = $"{ulong.Parse(rv):X}";
                             break;
                     }
                 }
