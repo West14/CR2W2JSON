@@ -82,6 +82,8 @@ namespace CR2W2JSON.Core
                     return new VOMapParser(chunk);
                 case "locVoiceoverLengthMap":
                     return new StringIDVariantLengthsReportParser(chunk);
+                case "localizationPersistenceSubtitleEntries":
+                    return new SubtitlesParser(chunk);
             }
 
             return null;
