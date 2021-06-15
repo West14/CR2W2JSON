@@ -80,6 +80,8 @@ namespace CR2W2JSON
                     return new VOLanguageDataMapParser(chunk);
                 case "locVoiceoverMap":
                     return new VOMapParser(chunk);
+                case "locVoiceoverLengthMap":
+                    return new StringIDVariantLengthsReportParser(chunk);
             }
 
             return null;
