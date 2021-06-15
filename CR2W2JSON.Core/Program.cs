@@ -84,6 +84,8 @@ namespace CR2W2JSON.Core
                     return new StringIDVariantLengthsReportParser(chunk);
                 case "localizationPersistenceSubtitleEntries":
                     return new SubtitlesParser(chunk);
+                case "localizationPersistenceSubtitleMap":
+                    return new SubtitlesMapParser(chunk);
             }
 
             return null;
