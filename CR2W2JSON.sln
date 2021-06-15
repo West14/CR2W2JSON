@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CR2W2JSON", "CR2W2JSON\CR2W2JSON.csproj", "{1A857D34-CFFF-42FB-8380-5094F6DC3CE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CR2W2JSON.Core", "CR2W2JSON.Core\CR2W2JSON.Core.csproj", "{1A857D34-CFFF-42FB-8380-5094F6DC3CE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WolvenKit.Common", "WolvenKit.Common\WolvenKit.Common.csproj", "{E4D1FE0D-A2EB-49E6-967D-CE9BA23D41D1}"
 EndProject

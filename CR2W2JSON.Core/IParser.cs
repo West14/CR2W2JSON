@@ -1,6 +1,4 @@
-﻿using WolvenKit.Common.Model.Cr2w;
-
-namespace CR2W2JSON
+﻿namespace CR2W2JSON.Core
 {
     public interface IParser
     {

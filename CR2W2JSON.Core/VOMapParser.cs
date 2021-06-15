@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON
+namespace CR2W2JSON.Core
 {
-    public class StringIDVariantLengthsReportParser : IParser
+    public class VOMapParser : IParser
     {
         class EntriesArray
         {
             [JsonInclude]
-            [JsonPropertyName("femaleLength")]
-            public float FemaleLength;
+            [JsonPropertyName("femaleResPath")]
+            public string FemaleResPath;
 
             [JsonInclude]
-            [JsonPropertyName("maleLength")]
-            public float MaleLength;
+            [JsonPropertyName("maleResPath")]
+            public string MaleResPath;
 
             [JsonInclude]
             [JsonPropertyName("stringId")]
@@ -31,7 +30,7 @@ namespace CR2W2JSON
 
         private readonly ICR2WExport _chunk;
 
-        public StringIDVariantLengthsReportParser(ICR2WExport chunk)
+        public VOMapParser(ICR2WExport chunk)
         {
             _chunk = chunk;
         }
@@ -61,11 +60,11 @@ namespace CR2W2JSON
                     var rv = editableVariable.REDValue;
                     switch (editableVariable.REDName)
                     {
-                        case "femaleLength":
-                              obj.FemaleLength = float.Parse(rv);
+                        case "femaleResPath":
+                            obj.FemaleResPath = rv.Replace("[Soft]", "");
                             break;
-                        case "maleLength":
-                            obj.MaleLength = float.Parse(rv);
+                        case "maleResPath":
+                            obj.MaleResPath = rv.Replace("[Soft]", "");
                             break;
                         case "stringId":
                             obj.StringId = $"{ulong.Parse(rv):X}";

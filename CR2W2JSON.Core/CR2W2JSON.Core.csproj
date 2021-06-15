@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>CR2W2JSON.Core</AssemblyName>
+    <RootNamespace>CR2W2JSON.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

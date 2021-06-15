@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON
+namespace CR2W2JSON.Core
 {
     class OnScreenEntries
     {
