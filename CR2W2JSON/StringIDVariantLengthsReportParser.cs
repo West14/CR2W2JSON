@@ -11,11 +11,11 @@ namespace CR2W2JSON
         {
             [JsonInclude]
             [JsonPropertyName("femaleLength")]
-            public string FemaleLength;
+            public float FemaleLength;
 
             [JsonInclude]
             [JsonPropertyName("maleLength")]
-            public string MaleLength;
+            public float MaleLength;
 
             [JsonInclude]
             [JsonPropertyName("stringId")]
@@ -62,10 +62,10 @@ namespace CR2W2JSON
                     switch (editableVariable.REDName)
                     {
                         case "femaleLength":
-                              obj.FemaleLength = rv;
+                              obj.FemaleLength = float.Parse(rv);
                             break;
                         case "maleLength":
-                            obj.MaleLength = rv;
+                            obj.MaleLength = float.Parse(rv);
                             break;
                         case "stringId":
                             obj.StringId = $"{ulong.Parse(rv):X}";
