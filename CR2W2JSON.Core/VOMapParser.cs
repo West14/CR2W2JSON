@@ -6,7 +6,7 @@ namespace CR2W2JSON.Core
 {
     public class VOMapParser : IParser
     {
-        class EntriesArray
+        class Entry
         {
             [JsonInclude]
             [JsonPropertyName("femaleResPath")]
@@ -21,11 +21,11 @@ namespace CR2W2JSON.Core
             public string StringId;
         }
 
-        class Entry
+        class EntriesArray
         {
             [JsonInclude]
             [JsonPropertyName("entries")]
-            public List<EntriesArray> Entries;
+            public List<Entry> Entries;
         }
 
         private readonly ICR2WExport _chunk;
@@ -37,7 +37,7 @@ namespace CR2W2JSON.Core
 
         public object GetData()
         {
-            var output = new Entry();
+            var output = new EntriesArray();
 
             foreach (var v in _chunk.data.ChildrEditableVariables)
             {
@@ -48,13 +48,13 @@ namespace CR2W2JSON.Core
             return output;
         }
 
-        private List<EntriesArray> GetMetaData(IEditableVariable evar)
+        private List<Entry> GetMetaData(IEditableVariable evar)
         {
-            var metaList = new List<EntriesArray>();
+            var metaList = new List<Entry>();
 
             foreach (var sVariable in evar.ChildrEditableVariables)
             {
-                var obj = new EntriesArray();
+                var obj = new Entry();
                 foreach (var editableVariable in sVariable.ChildrEditableVariables)
                 {
                     var rv = editableVariable.REDValue;
