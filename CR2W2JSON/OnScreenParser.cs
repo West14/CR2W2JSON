@@ -50,13 +50,13 @@ namespace CR2W2JSON
                             entry.PrimaryKey = UInt64.Parse(ev.REDValue);
                             break;
                         case "secondaryKey":
-                            entry.SecondaryKey = ev.REDValue;
+                            entry.SecondaryKey = ev.REDValue != null ? ev.REDValue : "";
                             break;
                         case "femaleVariant":
-                            entry.FemaleVariant = ev.REDValue;
+                            entry.FemaleVariant = ev.REDValue != null ? ev.REDValue : "";
                             break;
                         case "maleVariant":
-                            entry.MaleVariant = ev.REDValue;
+                            entry.MaleVariant = ev.REDValue != null ? ev.REDValue : "";
                             break;
                     }
                 }
