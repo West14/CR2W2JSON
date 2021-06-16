@@ -1,80 +1,34 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Runtime.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
 namespace CR2W2JSON.Core.Parser
 {
-    public class VoMapParser : IParser
+    public class VoMapParser : AbstractParser
     {
-        class Entry
+        public override ISerializable GetData() =>
+            GetEntriesDictionary(GetVoMapEntries(Chunk.data.ChildrEditableVariables[0]));
+
+        private List<Dictionary<string, dynamic>> GetVoMapEntries(IEditableVariable evar)
         {
-            [JsonInclude]
-            [JsonPropertyName("femaleResPath")]
-            public string FemaleResPath;
-
-            [JsonInclude]
-            [JsonPropertyName("maleResPath")]
-            public string MaleResPath;
-
-            [JsonInclude]
-            [JsonPropertyName("stringId")]
-            public string StringId;
-        }
-
-        class EntriesArray
-        {
-            [JsonInclude]
-            [JsonPropertyName("entries")]
-            public List<Entry> Entries;
-        }
-
-        private readonly ICR2WExport _chunk;
-
-        public VoMapParser(ICR2WExport chunk)
-        {
-            _chunk = chunk;
-        }
-
-        public object GetData()
-        {
-            var output = new EntriesArray();
-
-            foreach (var v in _chunk.data.ChildrEditableVariables)
-            {
-                //"entries":
-                output.Entries = GetMetaData(v);
-            }
-
-            return output;
-        }
-
-        private List<Entry> GetMetaData(IEditableVariable evar)
-        {
-            var metaList = new List<Entry>();
+            var entries = new List<Dictionary<string, dynamic>>();
 
             foreach (var sVariable in evar.ChildrEditableVariables)
             {
-                var obj = new Entry();
-                foreach (var editableVariable in sVariable.ChildrEditableVariables)
+                var entry = new Dictionary<string, dynamic>();
+                foreach (var ev in sVariable.ChildrEditableVariables)
                 {
-                    var rv = editableVariable.REDValue;
-                    switch (editableVariable.REDName)
-                    {
-                        case "femaleResPath":
-                            obj.FemaleResPath = rv.Replace("[Soft]", "");
-                            break;
-                        case "maleResPath":
-                            obj.MaleResPath = rv.Replace("[Soft]", "");
-                            break;
-                        case "stringId":
-                            obj.StringId = $"{ulong.Parse(rv):X}";
-                            break;
-                    }
+                    var name = ev.REDName;
+                    var rv = ev.REDValue;
+                    entry.Add(name, name == "stringId" ? $"{ulong.Parse(rv):X}" : rv.Replace("[Soft]", ""));
+                    
                 }
-                metaList.Add(obj);
+                entries.Add(entry);
             }
 
-            return metaList;
+            return entries;
         }
+
+        public VoMapParser(ICR2WExport chunk) : base(chunk) {}
     }
 }

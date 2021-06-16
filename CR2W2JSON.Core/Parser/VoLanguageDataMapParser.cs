@@ -1,85 +1,42 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
 namespace CR2W2JSON.Core.Parser
 {
-    public class VoLanguageDataMapParser : IParser
+    public class VoLanguageDataMapParser : AbstractParser
     {
-        class Entry
+        public override ISerializable GetData()
         {
-            [JsonInclude]
-            [JsonPropertyName("languageCode")]
-            public string LanguageCode;
-
-            //there is a bug from REDs in naming: "lenghtMapReport" instead of "lengthMapReport"
-            [JsonInclude]
-            [JsonPropertyName("lenghtMapReport")]
-            public string LengthMapReport;
-
-            //there is a bug from REDs in naming: "voiceverMapReport" instead of "voiceoverMapReport"
-            [JsonInclude]
-            [JsonPropertyName("voiceverMapReport")]
-            public string VoiceoverMapReport;
-
-            [JsonInclude]
-            [JsonPropertyName("voMapChunks")]
-            public List<string> VoMapChunks;
+            return GetEntriesDictionary(GetMetaData(Chunk.data.ChildrEditableVariables[0]));
         }
 
-        class EntriesArray
+        private List<Dictionary<string, dynamic>> GetMetaData(IEditableVariable evar)
         {
-            [JsonInclude]
-            [JsonPropertyName("entries")]
-            public List<Entry> Entries;
-        }
-
-        private readonly ICR2WExport _chunk;
-
-        public VoLanguageDataMapParser(ICR2WExport chunk)
-        {
-            _chunk = chunk;
-        }
-
-        public object GetData()
-        {
-            var output = new EntriesArray();
-
-            foreach (var v in _chunk.data.ChildrEditableVariables)
-            {
-                //"entries":
-                output.Entries = GetMetaData(v);
-            }
-
-            return output;
-        }
-
-        private List<Entry> GetMetaData(IEditableVariable evar)
-        {
-            var metaList = new List<Entry>();
+            var metaList = new List<Dictionary<string, dynamic>>();
 
             foreach (var sVariable in evar.ChildrEditableVariables)
             {
-                var obj = new Entry();
-                obj.VoMapChunks = new List<string>();
+                var obj = new Dictionary<string, dynamic>();
+                var voMapChunks = new List<string>();
                 foreach (var editableVariable in sVariable.ChildrEditableVariables)
                 {
-                    var rv = editableVariable.REDValue;
-                    switch (editableVariable.REDName)
+                    var redValue = editableVariable.REDValue;
+                    var redName = editableVariable.REDName;
+                    switch (redName)
                     {
                         case "languageCode":
-                            obj.LanguageCode = rv;
+                            obj.Add(redName, redValue);
                             break;
                         case "lenghtMapReport":
-                            obj.LengthMapReport = rv.Replace("[Soft]", "").Replace("[Default]", " ");
-                            break;
                         case "voiceverMapReport":
-                            obj.VoiceoverMapReport = rv.Replace("[Default]", " ").Replace("[Soft]", "");
+                            obj.Add(redName, redValue.Replace("[Default]", " ").Replace("[Soft]", ""));
                             break;
                         case "voMapChunks":
                             foreach (var entrs in editableVariable.ChildrEditableVariables)
                             {
-                                obj.VoMapChunks.Add(entrs.REDValue.Replace("[Soft]", ""));
+                                voMapChunks.Add(entrs.REDValue.Replace("[Soft]", ""));
                             }
                             break;
                     }
@@ -89,5 +46,7 @@ namespace CR2W2JSON.Core.Parser
 
             return metaList;
         }
+
+        public VoLanguageDataMapParser(ICR2WExport chunk) : base(chunk) {}
     }
 }

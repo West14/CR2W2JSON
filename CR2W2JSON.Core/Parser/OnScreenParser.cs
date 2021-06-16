@@ -1,75 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
 namespace CR2W2JSON.Core.Parser
 {
-    class OnScreenEntries
+    public class OnScreenParser : AbstractParser
     {
-        [JsonInclude]
-        [JsonPropertyName("entries")]
-        public List<OnScreenEntry> Entries = new();
-    }
-    
-    class OnScreenEntry
-    {
-        [JsonInclude]
-        [JsonPropertyName("primaryKey")]
-        public UInt64 PrimaryKey;
-        
-        [JsonInclude]
-        [JsonPropertyName("secondaryKey")]
-        public string SecondaryKey;
-        
-        [JsonInclude]
-        [JsonPropertyName("femaleVariant")]
-        public string FemaleVariant;
-        
-        [JsonInclude]
-        [JsonPropertyName("maleVariant")]
-        public string MaleVariant;
-    }
-    
-    public class OnScreenParser : IParser
-    {
-        private ICR2WExport _chunk;
-        
-        public OnScreenParser(ICR2WExport chunk)
+        public override ISerializable GetData()
         {
-            _chunk = chunk;
-        }
-
-        public object GetData()
-        {
-            var entries = new OnScreenEntries();
+            var entries = new List<Dictionary<string, dynamic>>();
             
-            foreach (var childr in _chunk.data.ChildrEditableVariables[0].ChildrEditableVariables)
+            foreach (var childr in Chunk.data.ChildrEditableVariables[0].ChildrEditableVariables)
             {
-                var entry = new OnScreenEntry();
+                var entry = new Dictionary<string, dynamic>();
                 foreach (var ev in childr.ChildrEditableVariables)
                 {
                     switch (ev.REDName)
                     {
                         case "primaryKey":
-                            entry.PrimaryKey = UInt64.Parse(ev.REDValue);
+                            entry.Add(ev.REDName, UInt64.Parse(ev.REDValue));
                             break;
                         case "secondaryKey":
-                            entry.SecondaryKey = ev.REDValue ?? "";
-                            break;
                         case "femaleVariant":
-                            entry.FemaleVariant = ev.REDValue ?? "";
-                            break;
                         case "maleVariant":
-                            entry.MaleVariant = ev.REDValue ?? "";
+                            entry.Add(ev.REDName, ev.REDValue ?? "");
                             break;
                     }
                 }
                 
-                entries.Entries.Add(entry);
+                entries.Add(entry);
             }
-            
-            return entries;
+
+            return GetEntriesDictionary(entries);
         }
+
+        public OnScreenParser(ICR2WExport chunk) : base(chunk) {}
     }
 }

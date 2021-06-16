@@ -1,80 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Runtime.Serialization;
 using WolvenKit.Common.Model.Cr2w;
+using WolvenKit.RED4.CR2W;
 
 namespace CR2W2JSON.Core.Parser
 {
-    public class StringIdVariantLengthsReportParser : IParser
+    public class StringIdVariantLengthsReportParser : AbstractParser
     {
-        class Entry
+        public override ISerializable GetData()
         {
-            [JsonInclude]
-            [JsonPropertyName("femaleLength")]
-            public float FemaleLength;
-
-            [JsonInclude]
-            [JsonPropertyName("maleLength")]
-            public float MaleLength;
-
-            [JsonInclude]
-            [JsonPropertyName("stringId")]
-            public string StringId;
+            return GetEntriesDictionary(GetReportEntries(Chunk.data.ChildrEditableVariables[0]));
         }
 
-        class EntriesArray
+        private List<Dictionary<string, dynamic>> GetReportEntries(IEditableVariable evar)
         {
-            [JsonInclude]
-            [JsonPropertyName("entries")]
-            public List<Entry> Entries;
-        }
-
-        private readonly ICR2WExport _chunk;
-
-        public StringIdVariantLengthsReportParser(ICR2WExport chunk)
-        {
-            _chunk = chunk;
-        }
-
-        public object GetData()
-        {
-            var output = new EntriesArray();
-
-            foreach (var v in _chunk.data.ChildrEditableVariables)
-            {
-                //"entries":
-                output.Entries = GetMetaData(v);
-            }
-
-            return output;
-        }
-
-        private List<Entry> GetMetaData(IEditableVariable evar)
-        {
-            var metaList = new List<Entry>();
+            var metaList = new List<Dictionary<string, dynamic>>();
 
             foreach (var sVariable in evar.ChildrEditableVariables)
             {
-                var obj = new Entry();
+                var entry = new Dictionary<string, dynamic>();
                 foreach (var editableVariable in sVariable.ChildrEditableVariables)
                 {
-                    var rv = editableVariable.REDValue;
-                    switch (editableVariable.REDName)
-                    {
-                        case "femaleLength":
-                              obj.FemaleLength = float.Parse(rv);
-                            break;
-                        case "maleLength":
-                            obj.MaleLength = float.Parse(rv);
-                            break;
-                        case "stringId":
-                            obj.StringId = $"{ulong.Parse(rv):X}";
-                            break;
-                    }
+                    var redValue = editableVariable.REDValue;
+                    var redName = editableVariable.REDName;
+                    entry.Add(redName, redName == "stringId" ? $"{ulong.Parse(redValue):X}" : float.Parse(redValue));
+
                 }
-                metaList.Add(obj);
+                metaList.Add(entry);
             }
 
             return metaList;
         }
+
+        public StringIdVariantLengthsReportParser(ICR2WExport chunk) : base(chunk) {}
     }
 }
