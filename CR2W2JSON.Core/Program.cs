@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics.CodeAnalysis;
@@ -7,27 +6,23 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Catel.IoC;
+using CR2W2JSON.Core.Parser;
 using WolvenKit.Common.Model.Cr2w;
 using WolvenKit.Common.Services;
 using WolvenKit.RED4.CR2W;
 
 namespace CR2W2JSON.Core
 {
-    class Json
+    internal class Json
     {
-        [JsonInclude]
-        [JsonPropertyName("RootType")]
-        public string RootType;
-
-        [JsonInclude]
-        [JsonPropertyName("Data")]
-        public object Data;
+        [JsonInclude] [JsonPropertyName("RootType")] public string RootType;
+        [JsonInclude] [JsonPropertyName("Data")] public object Data;
     }
-    
-    class Program
+
+    internal static class Program
     {
         [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: System.Reflection.CustomAttributeNamedParameter[]")]
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             var rootCommand = new RootCommand
             {
@@ -62,41 +57,19 @@ namespace CR2W2JSON.Core
                         Data = parser.GetData()
                     };
 
-                    //process subtitles from subtitles map file
                     if (parser.GetType() == typeof(SubtitlesMapParser))
                     {
-                        //iterate through all SubtitlesMap entries
-                        foreach (var entrs in ((SubtitlesMapParser)parser).GetEntries())
+                        if (input.DirectoryName == output.DirectoryName)
                         {
-                            //define input subtitle file location
-                            //define output subtitle file location
-                            string sbtlRelPath = entrs.SubtitleFile.Substring(entrs.SubtitleFile.IndexOf(entrs.SubtitleGroup));
-                            FileInfo sbtlInPath = new FileInfo(input.DirectoryName + "\\" + sbtlRelPath);
-                            FileInfo sbtlOutPath = new FileInfo(output.DirectoryName + "\\" + sbtlRelPath);
-                            try
-                            {
-                                CR2W = s.TryReadCr2WFile(File.OpenRead(sbtlInPath.FullName));
-                                var subtitleVCChunks = CR2W.Chunks[0].VirtualChildrenChunks[0];
-                                SubtitlesParser sp = new SubtitlesParser(subtitleVCChunks);
-                                var subtitleJson = new Json
-                                {
-                                    RootType = subtitleVCChunks.REDType,
-                                    Data = sp.GetData()
-                                };
-
-                                if (!Directory.Exists(sbtlOutPath.DirectoryName))
-                                {
-                                    Directory.CreateDirectory(sbtlOutPath.DirectoryName);
-                                }
-                                File.WriteAllText(sbtlOutPath.FullName, JsonSerializer.Serialize(subtitleJson));
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.Message);
-                            }
+                            Console.WriteLine("To convert subtitles the output directory must be " +
+                                              "different from the input directory.");
+                            Environment.Exit(2);
                         }
+                        
+                        ((SubtitlesMapParser)parser).
+                            ParseSubtitleFiles(input.Directory, output.Directory);
                     }
-
+                    
                     File.WriteAllText(output.FullName, JsonSerializer.Serialize(json));
                 }
                 catch (Exception e)
@@ -108,29 +81,20 @@ namespace CR2W2JSON.Core
             return rootCommand.InvokeAsync(args).Result;
     }
         
-        private static IParser? GetParserByType(string type, ICR2WExport chunk)
+        private static AbstractParser GetParserByType(string type, ICR2WExport chunk)
         {
-            switch (type)
+            return type switch
             {
-                case "audioAudioEventArray":
-                    return new AudioEventArrayParser(chunk);
-                case "localizationPersistenceOnScreenEntries":
-                    return new OnScreenParser(chunk);
-                case "localizationPersistenceLocDataMap":
-                    return new LocDataMapParser(chunk);
-                case "locVoLanguageDataMap":
-                    return new VOLanguageDataMapParser(chunk);
-                case "locVoiceoverMap":
-                    return new VOMapParser(chunk);
-                case "locVoiceoverLengthMap":
-                    return new StringIDVariantLengthsReportParser(chunk);
-                case "localizationPersistenceSubtitleEntries":
-                    return new SubtitlesParser(chunk);
-                case "localizationPersistenceSubtitleMap":
-                    return new SubtitlesMapParser(chunk);
-            }
-
-            return null;
+                "audioAudioEventArray" => new AudioEventArrayParser(chunk),
+                "localizationPersistenceOnScreenEntries" => new OnScreenParser(chunk),
+                "localizationPersistenceLocDataMap" => new LocDataMapAbstractParser(chunk),
+                "locVoLanguageDataMap" => new VoLanguageDataMapParser(chunk),
+                "locVoiceoverMap" => new VoMapParser(chunk),
+                "locVoiceoverLengthMap" => new StringIdVariantLengthsReportParser(chunk),
+                "localizationPersistenceSubtitleEntries" => new SubtitlesParser(chunk),
+                "localizationPersistenceSubtitleMap" => new SubtitlesMapParser(chunk),
+                _ => null
+            };
         }
     }
 }
