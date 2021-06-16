@@ -30,6 +30,8 @@ namespace CR2W2JSON.Core.Parser
             return entries;
         }
 
+        public void SetChunk(ICR2WExport chunk) { Chunk = chunk; }
+
         public SubtitlesParser(ICR2WExport chunk) : base(chunk) {}
     }
 }

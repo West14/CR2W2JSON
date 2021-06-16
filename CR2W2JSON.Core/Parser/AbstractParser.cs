@@ -6,7 +6,7 @@ namespace CR2W2JSON.Core.Parser
 {
     public abstract class AbstractParser
     {
-        protected readonly ICR2WExport Chunk;
+        protected ICR2WExport Chunk;
 
         protected AbstractParser(ICR2WExport chunk)
         {
