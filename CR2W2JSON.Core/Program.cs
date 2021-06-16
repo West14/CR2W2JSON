@@ -37,59 +37,76 @@ namespace CR2W2JSON.Core
             
             var locator = ServiceLocator.Default;
             locator.RegisterType<ILoggerService, LoggerService>();
-            
+
             rootCommand.Handler = CommandHandler.Create<FileInfo, FileInfo>((input, output) =>
             {
-                var s = new Cp77FileService();
-                var CR2W = s.TryReadCr2WFile(
-                    File.OpenRead(input.FullName)
-                );
+                try
+                {
+                    var s = new Cp77FileService();
+                    var CR2W = s.TryReadCr2WFile(
+                        File.OpenRead(input.FullName)
+                    );
 
-                var vcc = CR2W.Chunks[0].VirtualChildrenChunks[0];
-            
-                var parser = GetParserByType(vcc.REDType, vcc);
-                if (parser == null)
-                {
-                    Console.WriteLine("Unknown REDType: " + vcc.REDType);
-                    Environment.Exit(1);
-                }
-                //process subtitles from subtitles map file
-                else if (parser.GetType()== typeof(SubtitlesMapParser))
-                {
-                    //iterate through all SubtitlesMap entries
+                    var vcc = CR2W.Chunks[0].VirtualChildrenChunks[0];
+
+                    var parser = GetParserByType(vcc.REDType, vcc);
+                    if (parser == null)
                     {
-                        //define input subtitle file location
-                        //define output subtitle file location
-                        try 
+                        Console.WriteLine("Unknown REDType: " + vcc.REDType);
+                        Environment.Exit(1);
+                    }
+
+                    var json = new Json
+                    {
+                        RootType = vcc.REDType,
+                        Data = parser.GetData()
+                    };
+
+                    //process subtitles from subtitles map file
+                    if (parser.GetType() == typeof(SubtitlesMapParser))
+                    {
+                        //iterate through all SubtitlesMap entries
+                        foreach (var entrs in ((SubtitlesMapParser)parser).GetEntries())
                         {
-                            //cr2w = read subtitle with cr2w reader
-                            //var subtitleVCChunks = CR2W.Chunks[0].VirtualChildrenChunks[0];
-                            //SubtitlesParser sp = new SubtitlesParser(subtitleVCChunks);
-                            //var subtitleJson = new Json
-                            //{
-                            //    RootType = subtitleVCChunks.REDType,
-                            //    Data = sp.GetData()
-                            //};
-                            //File.WriteAllText(//defined output path, JsonSerializer.Serialize(subtitleJson));
-                        }
-                        catch (Exception e)
-                        {
-                            Console.Write(e.Message);
+                            //define input subtitle file location
+                            //define output subtitle file location
+                            string sbtlRelPath = entrs.SubtitleFile.Substring(entrs.SubtitleFile.IndexOf(entrs.SubtitleGroup));
+                            FileInfo sbtlInPath = new FileInfo(input.DirectoryName + "\\" + sbtlRelPath);
+                            FileInfo sbtlOutPath = new FileInfo(output.DirectoryName + "\\" + sbtlRelPath);
+                            try
+                            {
+                                CR2W = s.TryReadCr2WFile(File.OpenRead(sbtlInPath.FullName));
+                                var subtitleVCChunks = CR2W.Chunks[0].VirtualChildrenChunks[0];
+                                SubtitlesParser sp = new SubtitlesParser(subtitleVCChunks);
+                                var subtitleJson = new Json
+                                {
+                                    RootType = subtitleVCChunks.REDType,
+                                    Data = sp.GetData()
+                                };
+
+                                if (!Directory.Exists(sbtlOutPath.DirectoryName))
+                                {
+                                    Directory.CreateDirectory(sbtlOutPath.DirectoryName);
+                                }
+                                File.WriteAllText(sbtlOutPath.FullName, JsonSerializer.Serialize(subtitleJson));
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
                         }
                     }
-                }
-            
-                var json = new Json
-                {
-                    RootType = vcc.REDType,
-                    Data = parser.GetData()
-                };
 
-                File.WriteAllText(output.FullName, JsonSerializer.Serialize(json));
+                    File.WriteAllText(output.FullName, JsonSerializer.Serialize(json));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             });
-            
+
             return rootCommand.InvokeAsync(args).Result;
-        }
+    }
         
         private static IParser? GetParserByType(string type, ICR2WExport chunk)
         {

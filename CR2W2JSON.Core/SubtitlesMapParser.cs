@@ -6,7 +6,7 @@ namespace CR2W2JSON.Core
 {
     public class SubtitlesMapParser : IParser
     {
-        class Entry
+        public class Entry
         {
             [JsonInclude]
             [JsonPropertyName("subtitleFile")]
@@ -25,6 +25,7 @@ namespace CR2W2JSON.Core
         }
 
         private readonly ICR2WExport _chunk;
+        private List<Entry> entries;
 
         public SubtitlesMapParser(ICR2WExport chunk)
         {
@@ -38,10 +39,16 @@ namespace CR2W2JSON.Core
             foreach (var v in _chunk.data.ChildrEditableVariables)
             {
                 //"entries":
-                output.Entries = GetMetaData(v);
+                entries = GetMetaData(v);
+                output.Entries = entries;
             }
 
             return output;
+        }
+
+        public List<Entry> GetEntries()
+        {
+            return entries;
         }
 
         private List<Entry> GetMetaData(IEditableVariable evar)
