@@ -12,31 +12,26 @@ namespace CR2W2JSON.Core.Parser
             _chunk = chunk;
         }
 
-        public object GetData()
+        public object GetData() => new Dictionary<string, List<Dictionary<string, string>>>
         {
-            return new Dictionary<string, List<Dictionary<string, string>>>
-            {
-                {"entries", GetLocDataMapEntries(_chunk.data.ChildrEditableVariables[0])}
-            };
-        }
+            {"entries", GetLocDataMapEntries(_chunk.data.ChildrEditableVariables[0])}
+        };
 
         private List<Dictionary<string, string>> GetLocDataMapEntries(IEditableVariable evar)
         {
-            var metaList = new List<Dictionary<string, string>>();
+            var entries = new List<Dictionary<string, string>>();
 
             foreach (var sVariable in evar.ChildrEditableVariables)
             {
-                var obj = new Dictionary<string, string>();
-                foreach (var editableVariable in sVariable.ChildrEditableVariables)
+                var entry = new Dictionary<string, string>();
+                foreach (var ev in sVariable.ChildrEditableVariables)
                 {
-                    var rv = editableVariable.REDValue;
-                    obj.Add(editableVariable.REDName, rv.Replace("[Soft]", ""));
+                    entry.Add(ev.REDName, ev.REDValue.Replace("[Soft]", ""));
                 }
-
-                metaList.Add(obj);
+                entries.Add(entry);
             }
 
-            return metaList;
+            return entries;
         }
     }
 }
