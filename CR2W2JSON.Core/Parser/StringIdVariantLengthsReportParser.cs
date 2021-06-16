@@ -2,9 +2,9 @@
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
-    public class StringIDVariantLengthsReportParser : IParser
+    public class StringIdVariantLengthsReportParser : IParser
     {
         class Entry
         {
@@ -30,7 +30,7 @@ namespace CR2W2JSON.Core
 
         private readonly ICR2WExport _chunk;
 
-        public StringIDVariantLengthsReportParser(ICR2WExport chunk)
+        public StringIdVariantLengthsReportParser(ICR2WExport chunk)
         {
             _chunk = chunk;
         }

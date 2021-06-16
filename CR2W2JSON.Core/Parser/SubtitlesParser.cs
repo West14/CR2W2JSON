@@ -2,19 +2,23 @@
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
-    public class SubtitlesMapParser : IParser
+    public class SubtitlesParser : IParser
     {
-        public class Entry
+        class Entry
         {
             [JsonInclude]
-            [JsonPropertyName("subtitleFile")]
-            public string SubtitleFile;
+            [JsonPropertyName("femaleVariant")]
+            public string FemaleVariant;
 
             [JsonInclude]
-            [JsonPropertyName("subtitleGroup")]
-            public string SubtitleGroup;
+            [JsonPropertyName("maleVariant")]
+            public string MaleVariant;
+
+            [JsonInclude]
+            [JsonPropertyName("stringId")]
+            public string StringId;
         }
 
         class EntriesArray
@@ -25,9 +29,8 @@ namespace CR2W2JSON.Core
         }
 
         private readonly ICR2WExport _chunk;
-        private List<Entry> entries;
 
-        public SubtitlesMapParser(ICR2WExport chunk)
+        public SubtitlesParser(ICR2WExport chunk)
         {
             _chunk = chunk;
         }
@@ -39,16 +42,10 @@ namespace CR2W2JSON.Core
             foreach (var v in _chunk.data.ChildrEditableVariables)
             {
                 //"entries":
-                entries = GetMetaData(v);
-                output.Entries = entries;
+                output.Entries = GetMetaData(v);
             }
 
             return output;
-        }
-
-        public List<Entry> GetEntries()
-        {
-            return entries;
         }
 
         private List<Entry> GetMetaData(IEditableVariable evar)
@@ -63,11 +60,14 @@ namespace CR2W2JSON.Core
                     var rv = editableVariable.REDValue;
                     switch (editableVariable.REDName)
                     {
-                        case "subtitleFile":
-                            obj.SubtitleFile = rv.Replace("[Soft]", "");
+                        case "femaleVariant":
+                            obj.FemaleVariant = rv != null ? rv : "";
                             break;
-                        case "subtitleGroup":
-                            obj.SubtitleGroup = rv;
+                        case "maleVariant":
+                            obj.MaleVariant = rv != null ? rv : "";
+                            break;
+                        case "stringId":
+                            obj.StringId = $"{ulong.Parse(rv):X}";
                             break;
                     }
                 }

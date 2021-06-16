@@ -2,23 +2,23 @@
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
-    public class LocDataMapParser : IParser
+    public class VoMapParser : IParser
     {
         class Entry
         {
             [JsonInclude]
-            [JsonPropertyName("langCode")]
-            public string LangCode;
+            [JsonPropertyName("femaleResPath")]
+            public string FemaleResPath;
 
             [JsonInclude]
-            [JsonPropertyName("onscreensPath")]
-            public string OnscreensPath;
+            [JsonPropertyName("maleResPath")]
+            public string MaleResPath;
 
             [JsonInclude]
-            [JsonPropertyName("subtitlePath")]
-            public string SubtitlePath;
+            [JsonPropertyName("stringId")]
+            public string StringId;
         }
 
         class EntriesArray
@@ -30,7 +30,7 @@ namespace CR2W2JSON.Core
 
         private readonly ICR2WExport _chunk;
 
-        public LocDataMapParser(ICR2WExport chunk)
+        public VoMapParser(ICR2WExport chunk)
         {
             _chunk = chunk;
         }
@@ -60,14 +60,14 @@ namespace CR2W2JSON.Core
                     var rv = editableVariable.REDValue;
                     switch (editableVariable.REDName)
                     {
-                        case "langCode":
-                            obj.LangCode = rv;
+                        case "femaleResPath":
+                            obj.FemaleResPath = rv.Replace("[Soft]", "");
                             break;
-                        case "onscreensPath":
-                            obj.OnscreensPath = rv.Replace("[Soft]", "");
+                        case "maleResPath":
+                            obj.MaleResPath = rv.Replace("[Soft]", "");
                             break;
-                        case "subtitlePath":
-                            obj.SubtitlePath = rv.Replace("[Soft]", "");
+                        case "stringId":
+                            obj.StringId = $"{ulong.Parse(rv):X}";
                             break;
                     }
                 }

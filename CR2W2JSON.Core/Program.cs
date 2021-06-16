@@ -7,6 +7,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Catel.IoC;
+using CR2W2JSON.Core.Parser;
 using WolvenKit.Common.Model.Cr2w;
 using WolvenKit.Common.Services;
 using WolvenKit.RED4.CR2W;
@@ -119,11 +120,11 @@ namespace CR2W2JSON.Core
                 case "localizationPersistenceLocDataMap":
                     return new LocDataMapParser(chunk);
                 case "locVoLanguageDataMap":
-                    return new VOLanguageDataMapParser(chunk);
+                    return new VoLanguageDataMapParser(chunk);
                 case "locVoiceoverMap":
-                    return new VOMapParser(chunk);
+                    return new VoMapParser(chunk);
                 case "locVoiceoverLengthMap":
-                    return new StringIDVariantLengthsReportParser(chunk);
+                    return new StringIdVariantLengthsReportParser(chunk);
                 case "localizationPersistenceSubtitleEntries":
                     return new SubtitlesParser(chunk);
                 case "localizationPersistenceSubtitleMap":

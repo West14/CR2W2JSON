@@ -1,4 +1,4 @@
-﻿namespace CR2W2JSON.Core
+﻿namespace CR2W2JSON.Core.Parser
 {
     public interface IParser
     {

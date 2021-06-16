@@ -3,26 +3,31 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
     class OnScreenEntries
     {
-        [JsonInclude][JsonPropertyName("entries")]
+        [JsonInclude]
+        [JsonPropertyName("entries")]
         public List<OnScreenEntry> Entries = new();
     }
     
     class OnScreenEntry
     {
-        [JsonInclude][JsonPropertyName("primaryKey")]
+        [JsonInclude]
+        [JsonPropertyName("primaryKey")]
         public UInt64 PrimaryKey;
         
-        [JsonInclude][JsonPropertyName("secondaryKey")]
+        [JsonInclude]
+        [JsonPropertyName("secondaryKey")]
         public string SecondaryKey;
         
-        [JsonInclude][JsonPropertyName("femaleVariant")]
+        [JsonInclude]
+        [JsonPropertyName("femaleVariant")]
         public string FemaleVariant;
         
-        [JsonInclude][JsonPropertyName("maleVariant")]
+        [JsonInclude]
+        [JsonPropertyName("maleVariant")]
         public string MaleVariant;
     }
     
@@ -50,13 +55,13 @@ namespace CR2W2JSON.Core
                             entry.PrimaryKey = UInt64.Parse(ev.REDValue);
                             break;
                         case "secondaryKey":
-                            entry.SecondaryKey = ev.REDValue != null ? ev.REDValue : "";
+                            entry.SecondaryKey = ev.REDValue ?? "";
                             break;
                         case "femaleVariant":
-                            entry.FemaleVariant = ev.REDValue != null ? ev.REDValue : "";
+                            entry.FemaleVariant = ev.REDValue ?? "";
                             break;
                         case "maleVariant":
-                            entry.MaleVariant = ev.REDValue != null ? ev.REDValue : "";
+                            entry.MaleVariant = ev.REDValue ?? "";
                             break;
                     }
                 }

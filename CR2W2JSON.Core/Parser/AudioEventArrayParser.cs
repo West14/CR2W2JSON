@@ -3,61 +3,31 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
     class AudioEventArray
     {
-        [JsonInclude]
-        [JsonPropertyName("isSortedByRedHash")]
-        public bool IsSortedByRedHash = true;
-
-        [JsonInclude]
-        [JsonPropertyName("events")]
-        public List<EventMetaData> Events;
-
-        [JsonInclude]
-        [JsonPropertyName("switchGroup")]
-        public List<EventMetaData> SwitchGroup;
+        [JsonInclude] [JsonPropertyName("isSortedByRedHash")] public bool IsSortedByRedHash = true;
+        [JsonInclude] [JsonPropertyName("events")] public List<EventMetaData> Events;
+        [JsonInclude] [JsonPropertyName("switchGroup")] public List<EventMetaData> SwitchGroup;
     
-        [JsonInclude]
-        [JsonPropertyName("switch")]
-        public List<EventMetaData> Switch;
-    
-        [JsonInclude]
-        [JsonPropertyName("stateGroup")]
-        public List<EventMetaData> StateGroup;
-    
-        [JsonInclude]
-        [JsonPropertyName("state")]
-        public List<EventMetaData> State;
-    
-        [JsonInclude]
-        [JsonPropertyName("gameParameter")]
-        public List<EventMetaData> GameParameter;
-
-        [JsonInclude] 
-        [JsonPropertyName("bus")]
-        public List<EventMetaData> Bus;
+        [JsonInclude] [JsonPropertyName("switch")] public List<EventMetaData> Switch;
+        [JsonInclude] [JsonPropertyName("stateGroup")] public List<EventMetaData> StateGroup;
+        [JsonInclude] [JsonPropertyName("state")] public List<EventMetaData> State;
+        [JsonInclude] [JsonPropertyName("gameParameter")] public List<EventMetaData> GameParameter;
+        [JsonInclude] [JsonPropertyName("bus")] public List<EventMetaData> Bus;
     }
     
     class EventMetaData
     {
-        [JsonPropertyName("redId")]
-        public string RedId { get; set; }
-        [JsonPropertyName("wwiseId")]
-        public UInt32 WwiseId { get; set; }
-        [JsonPropertyName("maxAttenuation")]
-        public float MaxAttenuation { get; set; }
-        [JsonPropertyName("minDuration")]
-        public float MinDuration { get; set; }
-        [JsonPropertyName("maxDuration")]
-        public float MaxDuration { get; set; }
-        [JsonPropertyName("isLooping")]
-        public bool IsLooping { get; set; }
-        [JsonPropertyName("stopActionEvents")]
-        public List<string> StopActionEvents { get; set; }
-        [JsonPropertyName("tags")]
-        public List<string> Tags { get; set; }
+        [JsonInclude] [JsonPropertyName("redId")] public string RedId;
+        [JsonInclude] [JsonPropertyName("wwiseId")] public UInt32 WwiseId;
+        [JsonInclude] [JsonPropertyName("maxAttenuation")] public float MaxAttenuation;
+        [JsonInclude] [JsonPropertyName("minDuration")] public float MinDuration;
+        [JsonInclude] [JsonPropertyName("maxDuration")] public float MaxDuration;
+        [JsonInclude] [JsonPropertyName("isLooping")] public bool IsLooping;
+        [JsonInclude] [JsonPropertyName("stopActionEvents")] public List<string> StopActionEvents;
+        [JsonInclude] [JsonPropertyName("tags")] public List<string> Tags;
     }
     
     public class AudioEventArrayParser : IParser
@@ -141,20 +111,10 @@ namespace CR2W2JSON.Core
                             obj.IsLooping = bool.Parse(rv);
                             break;
                         case "stopActionEvents":
-                            var evList = new List<string>();
-                            foreach (var ev in editableVariable.ChildrEditableVariables)
-                            {
-                                evList.Add(ev.REDValue);
-                            }
-                            obj.StopActionEvents = evList;
+                            obj.StopActionEvents = GetListFromEdVars(editableVariable.ChildrEditableVariables);
                             break;
                         case "tags":
-                            var tagList = new List<string>();
-                            foreach (var ev in editableVariable.ChildrEditableVariables)
-                            {
-                                tagList.Add(ev.REDValue);
-                            }
-                            obj.Tags = tagList;
+                            obj.Tags = GetListFromEdVars(editableVariable.ChildrEditableVariables);
                             break;
                     }
                 } 
@@ -162,6 +122,16 @@ namespace CR2W2JSON.Core
             }
 
             return metaList;
+        }
+
+        private List<string> GetListFromEdVars(List<IEditableVariable> vars)
+        {
+            var varList = new List<string>(); 
+            foreach (var ev in vars)
+            {
+                varList.Add(ev.REDValue);
+            }
+            return varList;
         }
     }
 }

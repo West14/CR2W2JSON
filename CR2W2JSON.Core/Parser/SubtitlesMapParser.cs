@@ -2,23 +2,19 @@
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
-    public class VOMapParser : IParser
+    public class SubtitlesMapParser : IParser
     {
-        class Entry
+        public class Entry
         {
             [JsonInclude]
-            [JsonPropertyName("femaleResPath")]
-            public string FemaleResPath;
+            [JsonPropertyName("subtitleFile")]
+            public string SubtitleFile;
 
             [JsonInclude]
-            [JsonPropertyName("maleResPath")]
-            public string MaleResPath;
-
-            [JsonInclude]
-            [JsonPropertyName("stringId")]
-            public string StringId;
+            [JsonPropertyName("subtitleGroup")]
+            public string SubtitleGroup;
         }
 
         class EntriesArray
@@ -29,8 +25,9 @@ namespace CR2W2JSON.Core
         }
 
         private readonly ICR2WExport _chunk;
+        private List<Entry> entries;
 
-        public VOMapParser(ICR2WExport chunk)
+        public SubtitlesMapParser(ICR2WExport chunk)
         {
             _chunk = chunk;
         }
@@ -42,10 +39,16 @@ namespace CR2W2JSON.Core
             foreach (var v in _chunk.data.ChildrEditableVariables)
             {
                 //"entries":
-                output.Entries = GetMetaData(v);
+                entries = GetMetaData(v);
+                output.Entries = entries;
             }
 
             return output;
+        }
+
+        public List<Entry> GetEntries()
+        {
+            return entries;
         }
 
         private List<Entry> GetMetaData(IEditableVariable evar)
@@ -60,14 +63,11 @@ namespace CR2W2JSON.Core
                     var rv = editableVariable.REDValue;
                     switch (editableVariable.REDName)
                     {
-                        case "femaleResPath":
-                            obj.FemaleResPath = rv.Replace("[Soft]", "");
+                        case "subtitleFile":
+                            obj.SubtitleFile = rv.Replace("[Soft]", "");
                             break;
-                        case "maleResPath":
-                            obj.MaleResPath = rv.Replace("[Soft]", "");
-                            break;
-                        case "stringId":
-                            obj.StringId = $"{ulong.Parse(rv):X}";
+                        case "subtitleGroup":
+                            obj.SubtitleGroup = rv;
                             break;
                     }
                 }

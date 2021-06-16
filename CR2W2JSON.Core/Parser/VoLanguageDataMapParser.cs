@@ -2,9 +2,9 @@
 using System.Text.Json.Serialization;
 using WolvenKit.Common.Model.Cr2w;
 
-namespace CR2W2JSON.Core
+namespace CR2W2JSON.Core.Parser
 {
-    public class VOLanguageDataMapParser : IParser
+    public class VoLanguageDataMapParser : IParser
     {
         class Entry
         {
@@ -36,7 +36,7 @@ namespace CR2W2JSON.Core
 
         private readonly ICR2WExport _chunk;
 
-        public VOLanguageDataMapParser(ICR2WExport chunk)
+        public VoLanguageDataMapParser(ICR2WExport chunk)
         {
             _chunk = chunk;
         }
