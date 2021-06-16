@@ -53,6 +53,31 @@ namespace CR2W2JSON.Core
                     Console.WriteLine("Unknown REDType: " + vcc.REDType);
                     Environment.Exit(1);
                 }
+                //process subtitles from subtitles map file
+                else if (parser.GetType()== typeof(SubtitlesMapParser))
+                {
+                    //iterate through all SubtitlesMap entries
+                    {
+                        //define input subtitle file location
+                        //define output subtitle file location
+                        try 
+                        {
+                            //cr2w = read subtitle with cr2w reader
+                            //var subtitleVCChunks = CR2W.Chunks[0].VirtualChildrenChunks[0];
+                            //SubtitlesParser sp = new SubtitlesParser(subtitleVCChunks);
+                            //var subtitleJson = new Json
+                            //{
+                            //    RootType = subtitleVCChunks.REDType,
+                            //    Data = sp.GetData()
+                            //};
+                            //File.WriteAllText(//defined output path, JsonSerializer.Serialize(subtitleJson));
+                        }
+                        catch (Exception e)
+                        {
+                            Console.Write(e.Message);
+                        }
+                    }
+                }
             
                 var json = new Json
                 {
